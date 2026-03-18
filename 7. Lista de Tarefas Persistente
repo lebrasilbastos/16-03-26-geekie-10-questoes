@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Tarefas - LocalStorage</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 700px; margin: 50px auto; padding: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .container { background: rgba(255,255,255,0.1); padding: 40px; border-radius: 20px; backdrop-filter: blur(10px); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+        input { padding: 15px; margin: 10px; border: none; border-radius: 10px; width: 70%; font-size: 16px; }
+        button { padding: 15px 25px; margin: 10px; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: bold; transition: all 0.3s; }
+        .adicionar { background: #4ecdc4; color: white; }
+        .remover { background: #ff6b6b; color: white; }
+        .limpar { background: #95a5a6; color: white; }
+        button:hover { transform: translateY(-2px); opacity: 0.9; }
+        .tarefa { padding: 20px; margin: 15px 0; background: rgba(255,255,255,0.2); border-radius: 15px; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; border-left: 5px solid #4ecdc4; }
+        .tarefa:hover { transform: translateX(10px); background: rgba(255,255,255,0.3); }
+        .tarefa.concluida { opacity: 0.6; text-decoration: line-through; border-left-color: #27ae60; }
+        .contador { background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; font-size: 18px; }
+        .status { font-size: 14px; opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Lista de Tarefas Persistente</h1>
+        <p class="status">Tarefas salvas automaticamente no navegador! 🔄</p>
+        
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="novaTarefa" placeholder="Digite sua nova tarefa..." onkeypress="if(event.key==='Enter') adicionarTarefa()">
+            <button class="adicionar" onclick="adicionarTarefa()">➕ Adicionar</button>
+        </div>
+        
+        <div class="contador
