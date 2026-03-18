@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏆 Ranking de Jogadores</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            min-height: 100vh; 
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
+            color: white; 
+            padding: 20px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { text-align: center; margin-bottom: 40px; font-size: 3em; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .form-section { 
+            background: rgba(255,255,255,0.1); 
+            padding: 30px; 
+            border-radius: 20px; 
+            backdrop-filter: blur(15px); 
+            margin-bottom: 40px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            display: flex; 
+            gap: 15px; 
+            flex-wrap: wrap; 
+            align-items: end;
+        }
+        input { 
+            padding: 15px 20px; 
+            border: none; 
+            border-radius: 12px; 
+            font-size: 16px; 
+            background: rgba(255,255,255,0.9); 
+            min-width: 200px;
+        }
+        button { 
+            padding: 15px 30px; 
+            border: none; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            font-weight: bold; 
+            transition: all 0.3s; 
+            min-width: 180px;
+        }
+        .btn-adicionar { background: linear-gradient(45deg, #ff6b6b, #ee5a52); color: white; }
+        .btn-limpar { background: linear-gradient(45deg, #95a5a6, #7f8c8d); color: white; }
+        button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+        .ranking-section { 
+            background: rgba(255,255,255,0.1); 
+            padding: 30px; 
+            border-radius: 20px; 
+            backdrop-filter: blur(15px); 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .stats { 
+            display: flex; 
+            justify-content: space-around; 
+            margin-bottom: 30px; 
+            text-align: center; 
+            gap: 20px;
+        }
+        .stat { background: rgba(255,255,255,0.2); padding: 15px; border-radius: 12px; flex: 1; }
+        .stat-number { font-size: 2.5em; font-weight: bold; display: block; }
+        .ranking-list { list-style: none; }
+        .jogador { 
+            padding: 20px; 
+            margin: 15px 0; 
+            background: rgba(255,255,255,0.15); 
+            border-radius: 15px; 
+            display: flex; 
+            align-items: center; 
+            gap: 20px; 
+            transition: all 0.3s;
+            border-left: 5px solid transparent;
+        }
+        .jogador:hover { 
+            transform: translateX(10px); 
+            background: rgba(255,255,255,0.25); 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        .posicao { 
+            font-size: 2.5em; 
+            font-weight: bold; 
+            min-width: 60px; 
+            text-align: center;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .top1 { border-left-color: #ffd700; }
+        .top2 { border-left-color: #c0c0c0; }
+        .top3 { border-left-color: #cd7f32; }
+        .nome { font-size: 1.4em; font-weight: bold; flex: 1; }
+        .pontos { 
+            font-size: 1.3em; 
+            font-weight: bold; 
+            background: rgba(255,255,255,0.2); 
+            padding: 10px 20px; 
+            border-radius: 25px;
+        }
+        @media (max-width: 768px) {
+            .form-section { flex-direction: column; align-items: stretch; }
+            input, button { width: 100%; min-width: auto; }
+            .stats { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏆 Ranking de Jogadores</h1>
+        
+        <div class="form-section">
+            <input type="text" id="nomeJogador" placeholder="Nome do jogador" maxlength="20">
+            <input type="number" id="pontosJogador" placeholder="Pontos" min="0" max="9999">
+            <button class="btn-adicionar" onclick="adicionarJogador()">➕ Adicionar ao Ranking</button>
+            <button class="btn-limpar" onclick="limparRanking()">🗑️ Limpar Ranking</button>
+        </div>
+
+        <div class="ranking-section">
+            <div class="stats">
+                <div class="stat">
+                    <span class="stat-number" id="totalJogadores">0</span>
+                    <span>Total Jogadores</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" id="totalPontos">0</span>
+                    <span>Total Pontos</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" id="melhorPontuacao">0</span>
+                    <span>Maior Pontuação</span>
+                </div>
+            </div>
+            
+            <ul class="ranking-list" id="listaRanking"></ul>
+        </div>
+    </div>
+
+    <script>
+        let jogadores = [];
+
+        function adicionarJogador() {
+            const nome = document.getElementById('nomeJogador').value.trim();
+            const pontos = parseInt(document.getElementById('pontosJogador').value);
+            
+            if (nome && !isNaN(pontos) && pontos >= 0) {
+                jogadores.push({ jogador: nome, pontos });
+                document.getElementById('nomeJogador').value = '';
+                document.getElementById('pontosJogador').value = '';
+                atualizarRanking();
+            } else {
+                alert('Por favor, preencha nome e pontos válidos!');
+            }
+        }
+
+        function atualizarRanking() {
+            // Ordenar por pontos DESCENDENTE
+            const jogadoresOrdenados = [...jogadores].sort((a, b) => b.pontos - a.pontos);
+            
+            // Usar MAP para adicionar posição no ranking
+            const rankingComPosicao = jogadoresOrdenados.map((jogador, index) => ({
+                ...jogador,
+                posicao: index + 1
+            }));
+
+            renderizarRanking(rankingComPosicao);
+            atualizarEstatisticas(rankingComPosicao);
+        }
+
+        function renderizarRanking(ranking) {
+            const lista = document.getElementById('listaRanking');
+            lista.innerHTML = '';
+            
+            ranking.forEach((jogador) => {
+                const li = document.createElement('li');
+                li.className = `jogador top${jogador.posicao}`;
+                li.innerHTML = `
+                    <div class="posicao">${jogador.posicao}º</div>
+                    <div class="nome">${jogador.jogador}</div>
+                    <div class="pontos">${jogador.pontos} pts</div>
+                `;
+                lista.appendChild(li);
+            });
+        }
+
+        function atualizarEstatisticas(ranking) {
+            document.getElementById('totalJogadores').textContent = ranking.length;
+            document.getElementById('totalPontos').textContent = ranking.reduce((sum, j) => sum + j.pontos, 0);
+            document.getElementById('melhorPontuacao').textContent = ranking.length > 0 ? ranking[0].pontos : 0;
+        }
+
+        function limparRanking() {
+            if (confirm('Tem certeza que deseja limpar todo o ranking?')) {
+                jogadores = [];
+                atualizarRanking();
+            }
+        }
+
+        // Adicionar com Enter
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                adicionarJogador();
+            }
+        });
+
+        // Inicializar
+        atualizarRanking();
+    </script>
+</body>
+</html>
