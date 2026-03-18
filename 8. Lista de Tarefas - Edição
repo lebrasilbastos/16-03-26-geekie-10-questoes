@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Tarefas - Editar</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 700px; margin: 50px auto; padding: 20px; }
+        .form { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        input { padding: 10px; margin: 5px; width: 300px; }
+        button { padding: 10px 15px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .adicionar { background: #28a745; color: white; }
+        .editar { background: #ffc107; color: #212529; }
+        .salvar { background: #007bff; color: white; }
+        .cancelar { background: #6c757d; color: white; }
+        .remover { background: #dc3545; color: white; }
+        button:hover { opacity: 0.9; }
+        .tarefa { padding: 15px; margin: 10px 0; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .editando input { width: 250px; margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <h1>📝 Lista de Tarefas - Edição</h1>
+    
+    <div class="form">
+        <input type="text" id="novaTarefa" placeholder="Digite uma nova tarefa">
+        <button class="adicionar" onclick="adicionarTarefa()">➕ Adicionar</button>
+    </div>
+
+    <div id="listaTarefas"></div>
+
+    <script>
+        let tarefas = [];
+        let indiceEditando = -1;
+
+        function adicionarTarefa() {
+            const input = document.getElementById('novaTarefa');
+            const texto = input.value.trim();
+            
+            if (texto) {
+                if (indiceEditando >= 0) {
+                    // Editar tarefa existente
+                    tarefas.splice(indiceEditando, 1, texto);
+                    indiceEditando = -1;
+                    input.value = '';
+                    input.placeholder = 'Digite uma nova tarefa';
+                } else {
+                    // Adicionar nova tarefa
+                    tarefas.push(texto);
+                    input.value = '';
+                }
+                renderizarLista();
+            }
+        }
+
+        function editarTarefa(indice) {
+            indiceEditando = indice;
+            const input = document.getElementById('novaTarefa');
+            input.value = tarefas[indice];
+            input.placeholder = 'Edite a tarefa e clique em Adicionar';
+            input.focus();
+        }
+
+        function removerTarefa(indice) {
+            tarefas.splice(indice, 1);
+            renderizarLista();
+        }
+
+        function renderizarLista() {
+            const lista = document.getElementById('listaTarefas');
+            lista.innerHTML = '';
+            
+            tarefas.forEach((tarefa, indice) => {
+                const div = document.createElement('div');
+                div.className = 'tarefa';
+                div.innerHTML = `
+                    <span>${tarefa}</span>
+                    <div>
+                        <button class="editar" onclick="editarTarefa(${indice})">✏️ Editar</button>
+                        <button class="remover" onclick="removerTarefa(${indice})">🗑️ Remover</button>
+                    </div>
+                `;
+                lista.appendChild(div);
+            });
+        }
+
+        // Enter para adicionar/editar
+        document.getElementById('novaTarefa').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') adicionarTarefa();
+        });
+
+        // Renderizar lista inicial
+        renderizarLista();
+    </script>
+</body>
+</html>
